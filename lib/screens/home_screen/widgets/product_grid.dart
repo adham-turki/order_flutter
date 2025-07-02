@@ -1,8 +1,8 @@
 
 import 'package:flutter/material.dart';
-import '../../constants/constants.dart';
-import '../../models/product_details.dart';
-import '../../models/rest_product.dart';
+import '../../../constants/constants.dart';
+import '../../../models/product_details.dart';
+import '../../../models/rest_product.dart';
 
 class ProductGrid extends StatelessWidget {
   final List<ProductDetails>? products;

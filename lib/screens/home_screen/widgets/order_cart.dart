@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../constants/constants.dart';
-import '../../providers/meal_provider.dart';
+import '../../../constants/constants.dart';
+import '../../../providers/meal_provider.dart';
 
 class OrderCart extends StatelessWidget {
   const OrderCart({super.key});
@@ -13,14 +13,14 @@ class OrderCart extends StatelessWidget {
         return Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            border: Border(left: BorderSide(color: Colors.grey[300]!)),
+            border: Border(right: BorderSide(color: Colors.grey[300]!)),
           ),
           child: Column(
             children: [
               // Cart header
               Container(
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: primaryColor,
                 ),
                 child: const Row(
@@ -28,7 +28,7 @@ class OrderCart extends StatelessWidget {
                     Icon(Icons.shopping_cart, color: Colors.white),
                     SizedBox(width: 8),
                     Text(
-                      'Current Order',
+                      'الطلب الحالي',
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -44,7 +44,7 @@ class OrderCart extends StatelessWidget {
                 child: mealProvider.cartItems.isEmpty
                     ? const Center(
                         child: Text(
-                          'No items in cart',
+                          'لا توجد عناصر في السلة',
                           style: TextStyle(color: Colors.grey),
                         ),
                       )
@@ -56,11 +56,16 @@ class OrderCart extends StatelessWidget {
                           return Card(
                             child: ListTile(
                               contentPadding: const EdgeInsets.all(8),
+                              leading: IconButton(
+                                onPressed: () => mealProvider.removeFromCart(index),
+                                icon: const Icon(Icons.delete, color: Colors.red, size: 20),
+                              ),
                               title: Text(
                                 item.productName ?? '',
                                 style: const TextStyle(fontSize: 12),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
+                                textDirection: TextDirection.rtl,
                               ),
                               subtitle: Text(
                                 '${item.price?.toStringAsFixed(2)} ₪',
@@ -68,18 +73,19 @@ class OrderCart extends StatelessWidget {
                                   color: primaryColor,
                                   fontWeight: FontWeight.bold,
                                 ),
+                                textDirection: TextDirection.rtl,
                               ),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   IconButton(
-                                    onPressed: () => mealProvider.decreaseQuantity(index),
-                                    icon: const Icon(Icons.remove, size: 16),
+                                    onPressed: () => mealProvider.increaseQuantity(index),
+                                    icon: const Icon(Icons.add, size: 16),
                                   ),
                                   Text('${item.quantity}'),
                                   IconButton(
-                                    onPressed: () => mealProvider.increaseQuantity(index),
-                                    icon: const Icon(Icons.add, size: 16),
+                                    onPressed: () => mealProvider.decreaseQuantity(index),
+                                    icon: const Icon(Icons.remove, size: 16),
                                   ),
                                 ],
                               ),
@@ -101,7 +107,7 @@ class OrderCart extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
-                          'Total:',
+                          'المجموع:',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -129,7 +135,7 @@ class OrderCart extends StatelessWidget {
                               backgroundColor: secondaryColor,
                               foregroundColor: Colors.white,
                             ),
-                            child: const Text('Save Order'),
+                            child: const Text('حفظ الطلب'),
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -142,7 +148,7 @@ class OrderCart extends StatelessWidget {
                               backgroundColor: primaryColor,
                               foregroundColor: Colors.white,
                             ),
-                            child: const Text('Invoice'),
+                            child: const Text('فاتورة'),
                           ),
                         ),
                       ],

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../constants/constants.dart';
-import '../../models/subcat_details.dart';
+import '../../../constants/constants.dart';
+import '../../../models/subcat_details.dart';
 
 class SubCategoryTabBar extends StatelessWidget {
   final List<SubCategoryDetails> subCategories;

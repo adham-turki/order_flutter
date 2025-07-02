@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../constants/constants.dart';
-import '../../models/meal_model.dart';
+import '../../../constants/constants.dart';
+import '../../../models/meal_model.dart';
 
 class CategoryTabBar extends StatelessWidget {
   final List<MealModel> categories;

@@ -50,7 +50,6 @@ class MealProvider extends ChangeNotifier {
         _meals = response.map<MealModel>((item) {
           return MealModel.fromJson(item as Map<String, dynamic>);
         }).toList();
-        print('Meals loaded: ${response}');
         setStatusText('Ready!');
       } else {
         setStatusText('Failed to load menu');
@@ -99,9 +98,33 @@ class MealProvider extends ChangeNotifier {
     }
   }
 
+  void removeFromCart(int index) {
+    if (index < _cartItems.length) {
+      _cartItems.removeAt(index);
+      notifyListeners();
+    }
+  }
+
   void clearCart() {
     _cartItems.clear();
     notifyListeners();
+  }
+
+  void editOrder(OrderModel order) {
+    _cartItems.clear();
+    _cartItems.addAll(order.items?.map((item) => CartItem(
+      productCode: item.productCode,
+      productName: item.productName,
+      price: item.price,
+      quantity: item.quantity ?? 1,
+    )) ?? []);
+    
+    // Remove the order from saved orders
+    _orders.removeWhere((o) => o.id == order.id);
+    _removeOrderFromPrefs(order.id!);
+    
+    notifyListeners();
+    _showMessage('Order loaded to cart for editing');
   }
 
   Future<void> saveOrder() async {
@@ -156,6 +179,18 @@ class MealProvider extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> orderStrings = prefs.getStringList('orders') ?? [];
     orderStrings.add(jsonEncode(order.toJson()));
+    await prefs.setStringList('orders', orderStrings);
+  }
+
+  Future<void> _removeOrderFromPrefs(String orderId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> orderStrings = prefs.getStringList('orders') ?? [];
+    
+    orderStrings.removeWhere((orderString) {
+      Map<String, dynamic> orderJson = jsonDecode(orderString);
+      return orderJson['id'] == orderId;
+    });
+    
     await prefs.setStringList('orders', orderStrings);
   }
 
