@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => MealProvider()),
       ],
       child: MaterialApp(
+        locale: const Locale('ar'),
         title: 'Restaurant Order App',
         theme: ThemeData(
           primaryColor: primaryColor,

@@ -14,7 +14,9 @@ dependencies:
   provider: ^6.1.1
   http: ^1.1.0
   big_decimal: ^0.1.0
-  pluto_grid: ^7.0.2  
+  pluto_grid: ^7.0.2 
+  shared_preferences: ^2.5.3 
+ 
 
 dev_dependencies:
   flutter_test:
