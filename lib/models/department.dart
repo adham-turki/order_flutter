@@ -1,5 +1,3 @@
-import 'package:pluto_grid/pluto_grid.dart';
-
 class DepartModel {
   String? txtCode;
   int? bolAllowdiscount;
@@ -100,56 +98,5 @@ class DepartModel {
   @override
   String toString() {
     return txtNamea ?? txtNamee ?? "";
-  }
-
-  DepartModel.fromPlutoRow(PlutoRow row) {
-    txtCode = row.cells['txtCode']?.value;
-    bolAllowdiscount = row.cells['bolAllowdiscount']?.value;
-    datCreationdate = row.cells['datCreationdate']?.value;
-    intDeleted = row.cells['intDeleted']?.value;
-    txtNamea = row.cells['txtNamea']?.value;
-    txtNamee = row.cells['txtNamee']?.value;
-    txtPrintername = row.cells['txtPrintername']?.value;
-    txtUsercode = row.cells['txtUsercode']?.value;
-    numIsParent = row.cells['numIsParent']?.value;
-    txtParentCode = row.cells['txtParentCode']?.value;
-    printTo = row.cells['printTo']?.value;
-    taxCategory = row.cells['taxCategory']?.value;
-    smalllinemodifier = row.cells['smalllinemodifier']?.value;
-    addtopos = row.cells['addtopos']?.value;
-    showinmob = row.cells['showinmob']?.value;
-    color = row.cells['color']?.value;
-    priorityindex = row.cells['priorityindex']?.value;
-    age = row.cells['age']?.value;
-    express = row.cells['express']?.value;
-    ebt = row.cells['ebt']?.value;
-  }
-
-  PlutoRow toPlutoRow(int count) {
-    return PlutoRow(
-      cells: {
-        'count': PlutoCell(value: count),
-        'txtCode': PlutoCell(value: txtCode),
-        'bolAllowdiscount': PlutoCell(value: bolAllowdiscount),
-        'datCreationdate': PlutoCell(value: datCreationdate),
-        'intDeleted': PlutoCell(value: intDeleted),
-        'txtNamea': PlutoCell(value: txtNamea),
-        'txtNamee': PlutoCell(value: txtNamee),
-        'txtPrintername': PlutoCell(value: txtPrintername),
-        'txtUsercode': PlutoCell(value: txtUsercode),
-        'numIsParent': PlutoCell(value: numIsParent),
-        'txtParentCode': PlutoCell(value: txtParentCode),
-        'printTo': PlutoCell(value: printTo),
-        'taxCategory': PlutoCell(value: taxCategory),
-        'smalllinemodifier': PlutoCell(value: smalllinemodifier),
-        'addtopos': PlutoCell(value: addtopos),
-        'showinmob': PlutoCell(value: showinmob),
-        'color': PlutoCell(value: color),
-        'priorityindex': PlutoCell(value: priorityindex),
-        'age': PlutoCell(value: age),
-        'express': PlutoCell(value: express),
-        'ebt': PlutoCell(value: ebt),
-      },
-    );
   }
 }

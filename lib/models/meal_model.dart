@@ -1,5 +1,5 @@
 import 'department.dart';
-import 'subcat_Details.dart';
+import 'subcat_details.dart';
 
 class MealModel {
   DepartModel? productCat;

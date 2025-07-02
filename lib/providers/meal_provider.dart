@@ -32,20 +32,20 @@ class MealProvider extends ChangeNotifier {
     setStatusText('Fetching menu data...');
 
     try {
+      Map<String, dynamic> body = {};
       NetworkingHelper networking = NetworkingHelper('$apiUrl/mealView/getAll');
-      List<dynamic>? response = await networking.getData();
+      List<dynamic>? response = await networking.postData(body);
 
       if (response != null) {
-        _meals = response
-            .map((item) => MealModel.fromJson(item as Map<String, dynamic>))
-            .toList();
-            print('Meals loaded: ${response}');
+        _meals = response.map<MealModel>((item) {
+          return MealModel.fromJson(item as Map<String, dynamic>);
+        }).toList();
+        print('Meals loaded: ${_meals.length}');
         setStatusText('Ready!');
       } else {
         setStatusText('Failed to load menu');
       }
     } catch (e) {
-      print('Error fetching meals: $e');
       setStatusText('Error loading menu');
     }
 
