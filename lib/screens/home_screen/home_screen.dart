@@ -75,11 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(
                   child: Row(
                     children: [
-                      // Cart (30%)
-                      const Expanded(
-                        flex: 30,
-                        child: OrderCart(),
-                      ),
+                     
                       // Products (70%)
                       Expanded(
                         flex: 70,
@@ -90,6 +86,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                         ),
                       ),
+                       // Cart (30%)
+                      const Expanded(
+                        flex: 30,
+                        child: OrderCart(),
+                      ),
                     ],
                   ),
                 ),
@@ -97,6 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           },
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             Navigator.push(

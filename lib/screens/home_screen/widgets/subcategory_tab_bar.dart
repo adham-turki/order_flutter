@@ -21,7 +21,6 @@ class SubCategoryTabBar extends StatelessWidget {
       color: Colors.white,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        reverse: true,
         itemCount: subCategories.length,
         itemBuilder: (context, index) {
           bool isSelected = index == selectedIndex;
