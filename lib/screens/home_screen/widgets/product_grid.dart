@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import '../../../constants/constants.dart';
 import '../../../models/product_details.dart';
@@ -24,7 +23,7 @@ class ProductGrid extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 4,
-        childAspectRatio: 0.8,
+        childAspectRatio: 1.1, // Further increased for more compact cards
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
       ),
@@ -44,7 +43,7 @@ class ProductGrid extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  flex: 3,
+                  flex: 1, // Reduced from 2 to 1 to make icon container much smaller
                   child: Container(
                     decoration: BoxDecoration(
                       color: thirdColor.withOpacity(0.1),
@@ -55,39 +54,35 @@ class ProductGrid extends StatelessWidget {
                     child: const Center(
                       child: Icon(
                         Icons.fastfood,
-                        size: 40,
+                        size: 24, // Further reduced from 28 to 24
                         color: primaryColor,
                       ),
                     ),
                   ),
                 ),
                 Expanded(
-                  flex: 2,
-                  
+                  flex: 1, // Reduced from 2 to 1 to make text container more compact
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    
+                    padding: const EdgeInsets.all(4.0), // Reduced from 6.0 to 4.0
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      
                       children: [
                         Text(
                           product.txtName ?? 'Product',
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 12,
+                            fontSize: 10, // Reduced from 11 to 10
                           ),
-                          maxLines: 2,
+                          maxLines: 1, // Reduced from 2 to 1 line for product name
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const Spacer(),
+                        const SizedBox(height: 2), // Small spacing between texts
                         Text(
                           '${product.dblSellprice?.toStringAsFixed(2) ?? '0'} ₪',
                           style: const TextStyle(
                             color: primaryColor,
-                            
                             fontWeight: FontWeight.bold,
-                            fontSize: 14,
+                            fontSize: 12, // Reduced from 13 to 12
                           ),
                         ),
                       ],

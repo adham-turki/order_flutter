@@ -11,7 +11,7 @@ import '../constants/constants.dart';
 class MealProvider extends ChangeNotifier {
   List<MealModel> _meals = [];
   List<OrderModel> _orders = [];
-  List<CartItem> _cartItems = [];
+  final List<CartItem> _cartItems = [];
   bool _isLoading = false;
   String _statusText = 'Loading menu...';
   int _selectedCategoryIndex = 0;
