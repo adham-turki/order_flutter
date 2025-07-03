@@ -15,6 +15,8 @@ class MealProvider extends ChangeNotifier {
   bool _isLoading = false;
   String _statusText = 'Loading menu...';
   int _selectedCategoryIndex = 0;
+  ScrollController? _cartScrollController;
+  OrderModel? _editingOrder; // Track which order is being edited
 
   List<MealModel> get meals => _meals;
   List<OrderModel> get orders => _orders;
@@ -22,6 +24,12 @@ class MealProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String get statusText => _statusText;
   int get selectedCategoryIndex => _selectedCategoryIndex;
+  ScrollController? get cartScrollController => _cartScrollController;
+  bool get isEditingOrder => _editingOrder != null;
+
+  void setCartScrollController(ScrollController controller) {
+    _cartScrollController = controller;
+  }
 
   double get cartTotal {
     return _cartItems.fold(0.0, (sum, item) => sum + item.totalPrice);
@@ -77,7 +85,21 @@ class MealProvider extends ChangeNotifier {
         quantity: 1,
       ));
     }
+    
     notifyListeners();
+    
+    // Auto-scroll to the last item after adding
+    if (_cartScrollController != null && _cartItems.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_cartScrollController!.hasClients) {
+          _cartScrollController!.animateTo(
+            _cartScrollController!.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    }
   }
 
   void increaseQuantity(int index) {
@@ -107,6 +129,7 @@ class MealProvider extends ChangeNotifier {
 
   void clearCart() {
     _cartItems.clear();
+    _editingOrder = null; // Clear editing state when cart is cleared
     notifyListeners();
   }
 
@@ -119,60 +142,117 @@ class MealProvider extends ChangeNotifier {
       quantity: item.quantity ?? 1,
     )) ?? []);
     
-    // Remove the order from saved orders
-    _orders.removeWhere((o) => o.id == order.id);
-    _removeOrderFromPrefs(order.id!);
+    // Store the order being edited but don't remove it from saved orders
+    _editingOrder = order;
     
     notifyListeners();
-    _showMessage('Order loaded to cart for editing');
+    _showMessage('تم تحميل الطلب للتعديل');
+  }
+
+  Future<void> deleteOrder(String orderId) async {
+    _orders.removeWhere((o) => o.id == orderId);
+    await _removeOrderFromPrefs(orderId);
+    notifyListeners();
+    _showMessage('تم حذف الطلب بنجاح');
   }
 
   Future<void> saveOrder() async {
     if (_cartItems.isEmpty) return;
     
-    String orderId = DateTime.now().millisecondsSinceEpoch.toString();
-    OrderModel order = OrderModel(
-      id: orderId,
-      status: 'saved',
-      items: _cartItems.map((item) => OrderItem(
+    if (_editingOrder != null) {
+      // Update the existing order
+      _editingOrder!.items = _cartItems.map((item) => OrderItem(
         productCode: item.productCode,
         productName: item.productName,
         quantity: item.quantity,
         price: item.price,
-      )).toList(),
-      total: cartTotal,
-      createdAt: DateTime.now(),
-    );
+      )).toList();
+      _editingOrder!.total = cartTotal;
+      _editingOrder!.createdAt = DateTime.now();
+      
+      // Update in memory
+      int index = _orders.indexWhere((o) => o.id == _editingOrder!.id);
+      if (index != -1) {
+        _orders[index] = _editingOrder!;
+      }
+      
+      // Update in SharedPreferences
+      await _updateOrderInPrefs(_editingOrder!);
+      _showMessage('تم تحديث الطلب بنجاح!');
+      
+      _editingOrder = null; // Clear editing state
+    } else {
+      // Create new order
+      String orderId = DateTime.now().millisecondsSinceEpoch.toString();
+      OrderModel order = OrderModel(
+        id: orderId,
+        status: 'saved',
+        items: _cartItems.map((item) => OrderItem(
+          productCode: item.productCode,
+          productName: item.productName,
+          quantity: item.quantity,
+          price: item.price,
+        )).toList(),
+        total: cartTotal,
+        createdAt: DateTime.now(),
+      );
 
-    await _saveOrderToPrefs(order);
-    _orders.add(order);
-    clearCart();
+      await _saveOrderToPrefs(order);
+      _orders.add(order);
+      _showMessage('تم حفظ الطلب بنجاح!');
+    }
     
-    _showMessage('Order saved successfully!');
+    clearCart();
   }
 
   Future<void> invoiceOrder() async {
     if (_cartItems.isEmpty) return;
     
-    String orderId = DateTime.now().millisecondsSinceEpoch.toString();
-    OrderModel order = OrderModel(
-      id: orderId,
-      status: 'invoiced',
-      items: _cartItems.map((item) => OrderItem(
+    if (_editingOrder != null) {
+      // Update the existing order and convert to invoice
+      _editingOrder!.items = _cartItems.map((item) => OrderItem(
         productCode: item.productCode,
         productName: item.productName,
         quantity: item.quantity,
         price: item.price,
-      )).toList(),
-      total: cartTotal,
-      createdAt: DateTime.now(),
-    );
+      )).toList();
+      _editingOrder!.total = cartTotal;
+      _editingOrder!.status = 'invoiced';
+      _editingOrder!.createdAt = DateTime.now();
+      
+      // Update in memory
+      int index = _orders.indexWhere((o) => o.id == _editingOrder!.id);
+      if (index != -1) {
+        _orders[index] = _editingOrder!;
+      }
+      
+      // Update in SharedPreferences
+      await _updateOrderInPrefs(_editingOrder!);
+      _showMessage('تم تحديث الطلب وتحويله إلى فاتورة!');
+      
+      _editingOrder = null; // Clear editing state
+    } else {
+      // Create new invoice
+      String orderId = DateTime.now().millisecondsSinceEpoch.toString();
+      OrderModel order = OrderModel(
+        id: orderId,
+        status: 'invoiced',
+        items: _cartItems.map((item) => OrderItem(
+          productCode: item.productCode,
+          productName: item.productName,
+          quantity: item.quantity,
+          price: item.price,
+        )).toList(),
+        total: cartTotal,
+        createdAt: DateTime.now(),
+      );
 
-    await _saveOrderToPrefs(order);
-    _orders.add(order);
-    clearCart();
+      await _saveOrderToPrefs(order);
+      _orders.add(order);
+      _showMessage('تم إنشاء الفاتورة بنجاح!');
+    }
     
-    _showMessage('Order invoiced successfully!');
+    clearCart();
   }
 
   Future<void> _saveOrderToPrefs(OrderModel order) async {
@@ -212,7 +292,7 @@ class MealProvider extends ChangeNotifier {
       _orders[index].status = 'invoiced';
       await _updateOrderInPrefs(_orders[index]);
       notifyListeners();
-      _showMessage('Order converted to invoice!');
+      _showMessage('تم تحويل الطلب إلى فاتورة!');
     }
   }
 
@@ -236,7 +316,6 @@ class MealProvider extends ChangeNotifier {
   }
 
   void _showMessage(String message) {
-    // You can implement a snackbar or toast here
     print(message);
   }
 }

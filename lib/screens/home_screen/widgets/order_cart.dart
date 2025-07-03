@@ -3,8 +3,31 @@ import 'package:provider/provider.dart';
 import '../../../constants/constants.dart';
 import '../../../providers/meal_provider.dart';
 
-class OrderCart extends StatelessWidget {
+class OrderCart extends StatefulWidget {
   const OrderCart({super.key});
+
+  @override
+  State<OrderCart> createState() => _OrderCartState();
+}
+
+class _OrderCartState extends State<OrderCart> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Set the scroll controller in the provider
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<MealProvider>(context, listen: false)
+          .setCartScrollController(_scrollController);
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +72,7 @@ class OrderCart extends StatelessWidget {
                         ),
                       )
                     : ListView.builder(
+                        controller: _scrollController,
                         padding: const EdgeInsets.all(8),
                         itemCount: mealProvider.cartItems.length,
                         itemBuilder: (context, index) {
