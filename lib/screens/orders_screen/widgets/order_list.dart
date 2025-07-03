@@ -42,17 +42,41 @@ class OrderList extends StatelessWidget {
       );
     }
 
-    return ListView.builder(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
-      itemCount: orders.length,
-      itemBuilder: (context, index) {
-        return OrderCard(
-          order: orders[index],
-          canEdit: canEdit,
-          provider: provider,
-          onEdit: onEdit,
-        );
-      },
+      child: Column(
+        children: [
+          for (int i = 0; i < orders.length; i += 2)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: OrderCard(
+                      order: orders[i],
+                      canEdit: canEdit,
+                      provider: provider,
+                      onEdit: onEdit,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  if (i + 1 < orders.length)
+                    Expanded(
+                      child: OrderCard(
+                        order: orders[i + 1],
+                        canEdit: canEdit,
+                        provider: provider,
+                        onEdit: onEdit,
+                      ),
+                    )
+                  else
+                    const Expanded(child: SizedBox()),
+                ],
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
